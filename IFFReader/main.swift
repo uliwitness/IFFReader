@@ -8,5 +8,47 @@
 
 import Foundation
 
-print("Hello, World!")
+class IFFReader
+{
+	init( filePath : String ) {
+		let fileData = NSData(contentsOfFile: filePath)
+		printIFF( fileData )
+	}
+	
+	func printIFF( data : NSData? ) {
+		var	offset = 0
+		var labelData : NSData? = NSData()
+		while( labelData != nil )
+		{
+			if data!.length <= offset {
+				break
+			}
+			labelData = data!.subdataWithRange(NSRange(location: offset, length: 4))
+			let labelStr = String(data: labelData!, encoding: NSASCIIStringEncoding)
+			offset += 4
+			if data!.length <= offset {
+				break
+			}
+			var length : CInt = 0
+			data!.getBytes( &length, range: NSRange(location: offset, length: 4))
+			offset += 4;
+			length = length.bigEndian
+			
+			print("label \(labelStr!)")
+			
+			if labelStr == "FORM" {
+				let formTypeData = data!.subdataWithRange(NSRange(location: offset, length: 4))
+				let formTypeStr = String(data: formTypeData, encoding: NSASCIIStringEncoding)
+				print("Form Type: \(formTypeStr!)")
+				offset += 4;
+				let blockData = data!.subdataWithRange(NSRange(location: offset, length: Int(length) - 4))
+				printIFF(blockData)
+			}
+			
+			offset += Int(length)
+		}
+	}
+}
 
+
+var reader = IFFReader( filePath: "/System/Library/Sounds/Submarine.aiff" )
