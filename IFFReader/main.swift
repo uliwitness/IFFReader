@@ -44,6 +44,11 @@ class IFFReader
 				let blockData = data!.subdataWithRange(NSRange(location: offset, length: Int(length) - 4))
 				printIFF(blockData)
 			}
+			else if labelStr == "AUTH" || labelStr == "ANNO" || labelStr == "NAME" || labelStr == "(c) " {
+				let blockData = data!.subdataWithRange(NSRange(location: offset, length: Int(length)))
+				let metadataStr = String(data: blockData, encoding: NSASCIIStringEncoding)
+				print("Content: \(metadataStr!)")
+			}
 			
 			offset += Int(length)
 		}
