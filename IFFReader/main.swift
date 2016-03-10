@@ -11,8 +11,13 @@ import Foundation
 class IFFReader
 {
 	init( filePath : String ) {
-		let fileData = NSData(contentsOfFile: filePath)
-		printIFF( fileData )
+		do {
+			let fileData = try NSData(contentsOfFile: filePath, options: .DataReadingMappedIfSafe)
+			printIFF( fileData )
+		}
+		catch {
+			
+		}
 	}
 	
 	func printIFF( data : NSData? ) {
